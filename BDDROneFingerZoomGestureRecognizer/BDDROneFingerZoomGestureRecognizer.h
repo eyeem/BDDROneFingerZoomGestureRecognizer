@@ -101,4 +101,10 @@
  */
 @property (nonatomic, assign) CGFloat maximumScale;
 
+
+/**
+ * The current photo orientation needed to calculate the distance moved accordingly
+ */
+@property (nonatomic, assign) UIInterfaceOrientation photoOrientation;
+
 @end

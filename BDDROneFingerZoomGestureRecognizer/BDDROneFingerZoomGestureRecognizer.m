@@ -121,11 +121,26 @@
 		self.initialScale = self.scale;
 		self.state = UIGestureRecognizerStateChanged;
 	} else if (self.state == UIGestureRecognizerStateChanged) {
-		CGFloat movedDistance = self.initialLocationOnScreen.y - currentLocationOnScreen.y;
-		CGFloat movedPercent = ABS(movedDistance) / [UIScreen mainScreen].bounds.size.height;
-		CGFloat scalePercent = 1.0f + (self.scaleFactor - 1.0f) * movedPercent;
-		CGFloat newScale = self.initialScale * (movedDistance > 0.0f ? scalePercent : 1.0f / scalePercent);
+		CGFloat movedDistance = 0.0;
+				
+		if (self.photoOrientation == UIInterfaceOrientationPortrait) {
+			movedDistance = self.initialLocationOnScreen.y - currentLocationOnScreen.y;
+		} else if (self.photoOrientation == UIInterfaceOrientationLandscapeLeft) {
+			movedDistance = self.initialLocationOnScreen.y - currentLocationOnScreen.y;
+		} else if (self.photoOrientation == UIInterfaceOrientationLandscapeRight){
+			movedDistance = currentLocationOnScreen.y - self.initialLocationOnScreen.y;
+		}
 		
+		float amount = 0;
+		if (UIInterfaceOrientationIsPortrait(self.photoOrientation)) {
+			amount = [UIScreen mainScreen].bounds.size.height;
+		} else {
+			amount = [UIScreen mainScreen].bounds.size.width;
+		}
+		
+		CGFloat movedPercent = (ABS(movedDistance) / amount);
+		CGFloat scalePercent = 1.0f + self.scaleFactor * movedPercent;
+		CGFloat newScale = self.initialScale * (movedDistance > 0.0f ? scalePercent : 1.0f / scalePercent);
 		if (self.bouncesScale)
 			self.scale = [self zoomRubberBandScaleForZoomScale:newScale minimumZoomScale:self.minimumScale maximumZoomScale:self.maximumScale];
 		else
@@ -179,6 +194,10 @@
 
 - (void)setScaleFactor:(CGFloat)scaleFactor {
 	_scaleFactor = MAX(1.0f, scaleFactor);
+}
+
+- (void)setPhotoOrientation:(UIInterfaceOrientation)photoOrientation {
+	_photoOrientation = photoOrientation;
 }
 
 @end
